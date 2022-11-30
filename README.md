@@ -1,42 +1,23 @@
-# QABasedOnMedicaKnowledgeGraph
-self-implement of disease centered Medical graph from zero to full and sever as question answering base. 从无到有搭建一个以疾病为中心的一定规模医药领域知识图谱，并以该知识图谱完成自动问答与分析服务。
+self-implement of disease centered Medical graph from zero to full and sever as question answering base. 
+从无到有搭建一个以疾病为中心的一定规模医药领域知识图谱，并以该知识图谱完成自动问答与分析服务。
 
-# 项目介绍
 
-知识图谱是目前自然语言处理的一个热门方向，关于较全面的参考资料，可以查看我的ccks2018参会总结(https://github.com/liuhuanyong/CCKS2018Summary )。  
-与知识图谱相关的另一种形态，即事理图谱，本人在这方面也尝试性地积累了一些工作，可参考：(https://github.com/liuhuanyong/ComplexEventExtraction )  
-关于知识图谱概念性的介绍就不在此赘述。目前知识图谱在各个领域全面开花，如教育、医疗、司法、金融等。本项目立足医药领域，以垂直型医药网站为数据来源，以疾病为核心，构建起一个包含7类规模为4.4万的知识实体，11类规模约30万实体关系的知识图谱。
-本项目将包括以下两部分的内容：
-1) 基于垂直网站数据的医药知识图谱构建
-2) 基于医药知识图谱的自动问答
-
-# 项目最终效果
-话不多少，直接上图。以下两图是实际问答运行过程中的截图：
-![image](https://github.com/liuhuanyong/QABasedOnMedicalKnowledgeGraph/blob/master/img/chat1.png)
-
-![image](https://github.com/liuhuanyong/QABasedOnMedicalKnowledgeGraph/blob/master/img/chat2.png)
-
-# 项目运行方式
+# 项目运行
 1、配置要求：要求配置neo4j数据库及相应的python依赖包。neo4j数据库用户名密码记住，并修改相应文件。  
 2、知识图谱数据导入：python build_medicalgraph.py，导入的数据较多，估计需要几个小时。  
 3、启动问答：python chat_graph.py
 
 # 以下介绍详细方案
 # 一、医疗知识图谱构建
-# 1.1 业务驱动的知识图谱构建框架
-![image](https://github.com/liuhuanyong/QABasedOnMedicalKnowledgeGraph/blob/master/img/kg_route.png)
 
-# 1.2 脚本目录
-prepare_data/datasoider.py：网络资讯采集脚本  
+# 1.1 文件目录 
 prepare_data/datasoider.py：网络资讯采集脚本  
 prepare_data/max_cut.py：基于词典的最大向前/向后切分脚本  
-build_medicalgraph.py：知识图谱入库脚本    　　
+build_medicalgraph.py：知识图谱导入neo4j图数据库脚本    　　
 
-# 1.3 医药领域知识图谱规模
-1.3.1 neo4j图数据库存储规模
-![image](https://github.com/liuhuanyong/QABasedOnMedicalKnowledgeGraph/blob/master/img/graph_summary.png)
+# 1.2 医药领域知识图谱规模
 
-1.3.2 知识图谱实体类型
+1.3.1 知识图谱实体类型
 
 | 实体类型 | 中文含义 | 实体数量 |举例 |
 | :--- | :---: | :---: | :--- |
@@ -50,7 +31,7 @@ build_medicalgraph.py：知识图谱入库脚本    　　
 | Total | 总计 | 44,111 | 约4.4万实体量级|
 
 
-1.3.3 知识图谱实体关系类型
+1.3.2 知识图谱实体关系类型
 
 | 实体关系类型 | 中文含义 | 关系数量 | 举例|
 | :--- | :---: | :---: | :--- |
@@ -66,7 +47,7 @@ build_medicalgraph.py：知识图谱入库脚本    　　
 | acompany_with | 疾病并发疾病 | 12,029 | <下肢交通静脉瓣膜关闭不全,并发疾病,血栓闭塞性脉管炎>|
 | Total | 总计 | 294,149 | 约30万关系量级|
 
-1.3.4 知识图谱属性类型
+1.3.3 知识图谱属性类型
 
 | 属性类型 | 中文含义 | 举例 |
 | :--- | :---: | :---: |
@@ -81,15 +62,15 @@ build_medicalgraph.py：知识图谱入库脚本    　　
 
 
 # 二、基于医疗知识图谱的自动问答
-# 2.1 技术架构
-![image](https://github.com/liuhuanyong/QABasedOnMedicalKnowledgeGraph/blob/master/img/qa_route.png)
 
-# 2.2 脚本结构
+# 2.1 脚本结构
+answer_search.py：cypher语句查询脚本
 question_classifier.py：问句类型分类脚本  
 question_parser.py：问句解析脚本  
-chatbot_graph.py：问答程序脚本  
+chatbot_graph.py：启动问答程序脚本  
 
-# 2.3　支持问答类型
+
+# 2.2　支持问答类型
 
 | 问句类型 | 中文含义 | 问句举例 |
 | :--- | :---: | :---: |
@@ -192,19 +173,10 @@ chatbot_graph.py：问答程序脚本
         小勇: 通常可以通过全血细胞计数检查出来的疾病有成人类风湿性关节炎性巩膜炎；外阴-阴道-牙龈综合征；电击伤；老年收缩期高血压；小儿肝硬化；异常血红蛋白病；痴呆综合征；高血压病伴发的精神障碍；睾丸淋巴瘤；叶酸缺乏所致贫血；眼球内炎；不稳定血红蛋白病；类癌综合征；老年痴呆；急性淋巴管炎；宫颈妊娠；蚕食性角膜溃疡；低增生性急性白血病；交感性眼炎；原发性免疫缺陷病
 
 # 总结
-１、本项目完成了从无到有，以垂直网站为数据来源，构建起以疾病为中心的医疗知识图谱，实体规模4.4万，实体关系规模30万。并基于此，搭建起了一个可以回答18类问题的自动问答小系统,总共耗时3天。其中，数据采集与整理1天，知识图谱构建与入库0.5天，问答系统组件1.5天。总的来说，还是比较快速。      
+１、本项目完成了从无到有，以垂直网站为数据来源，构建起以疾病为中心的医疗知识图谱，实体规模4.4万，实体关系规模30万。  
 2、本项目以业务驱动，构建医疗知识图谱，知识schema设计基于所采集的结构化数据生成(对网页结构化数据进行xpath解析)。    
 3、本项目以neo4j作为存储，并基于传统规则的方式完成了知识问答，并最终以cypher查询语句作为问答搜索sql，支持了问答服务。  
-4、本项目可以快速部署，数据已经放在data/medical.json当中，本项目的数据，如侵犯相关单位权益，请联系我删除。本数据请勿商用，以免引起不必要的纠纷。在本项目中的部署上，可以遵循项目运行步骤，完成数据库搭建，并提供搜索服务。  
-5、本项目还有不足：关于疾病的起因、预防等，实际返回的是一大段文字，这里其实可以引入事件抽取的概念，进一步将原因结构化表示出来。这个可以后面进行尝试。    
+4、本项目数据data/medical.json。  
+5、本项目还有不足：关于疾病的起因、预防等，实际返回的是一大段文字，这里其实可以引入事件抽取的概念，进一步将原因结构化表示出来。    
 
-If any question about the project or me ,see https://liuhuanyong.github.io/
-
-
-如有自然语言处理、知识图谱、事理图谱、社会计算、语言资源建设等问题或合作，可联系我：    
-1、我的github项目介绍：https://liuhuanyong.github.io  
-2、我的csdn博客：https://blog.csdn.net/lhy2014  
-3、about me:刘焕勇，中国科学院软件研究所，lhy_in_blcu@126.com.       
-4、我的技术公众号:老刘说NLP,扫码一键关注：  
-![image](https://github.com/liuhuanyong/QABasedOnMedicalKnowledgeGraph/blob/master/img/wechat.jpg)
 

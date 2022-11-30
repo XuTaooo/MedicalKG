@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# File: question_parser.py
-# Author: lhy<lhy_in_blcu@126.com,https://huangyong.github.io>
-# Date: 18-10-4
+
 
 class QuestionPaser:
 
@@ -177,7 +175,6 @@ class QuestionPaser:
             sql = ["MATCH (m:Disease)-[r:need_check]->(n:Check) where n.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
 
         return sql
-
 
 
 if __name__ == '__main__':

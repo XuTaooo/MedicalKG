@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# File: data_spider.py
-# Author: lhy<lhy_in_blcu@126.com,https://huangyong.github.io>
-# Date: 18-10-3
-
 
 import urllib.request
 import urllib.parse
@@ -122,7 +118,7 @@ class CrimeSpider:
         ps = selector.xpath('//p')
         detail = []
         for p in ps:
-            info = p.xpath('string(.)').replace('\r','').replace('\n','').replace('\xa0', '').replace('   ', '').replace('\t','')
+            info = p.xpath('string(.)').replace('\r', '').replace('\n', '').replace('\xa0', '').replace('   ', '').replace('\t','')
             detail.append(info)
         symptoms_data = {}
         symptoms_data['symptoms'] = symptoms

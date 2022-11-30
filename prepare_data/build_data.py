@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# File: build_data.py
-# Author: lhy<lhy_in_blcu@126.com,https://huangyong.github.io>
-# Date: 18-10-3
+
 import pymongo
 from lxml import etree
 import os
 from max_cut import *
+
 
 class MedicalGraph:
     def __init__(self):
@@ -15,18 +14,18 @@ class MedicalGraph:
         self.db = self.conn['medical']
         self.col = self.db['data']
         first_words = [i.strip() for i in open(os.path.join(cur_dir, 'first_name.txt'))]
-        alphabets = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y', 'z']
-        nums = ['1','2','3','4','5','6','7','8','9','0']
+        alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+        nums = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
         self.stop_words = first_words + alphabets + nums
         self.key_dict = {
-            '医保疾病' : 'yibao_status',
-            "患病比例" : "get_prob",
-            "易感人群" : "easy_get",
-            "传染方式" : "get_way",
-            "就诊科室" : "cure_department",
-            "治疗方式" : "cure_way",
-            "治疗周期" : "cure_lasttime",
-            "治愈率" : "cured_prob",
+            '医保疾病': 'yibao_status',
+            "患病比例": "get_prob",
+            "易感人群": "easy_get",
+            "传染方式": "get_way",
+            "就诊科室": "cure_department",
+            "治疗方式": "cure_way",
+            "治疗周期": "cure_lasttime",
+            "治愈率": "cured_prob",
             '药品明细': 'drug_detail',
             '药品推荐': 'recommand_drug',
             '推荐': 'recommand_eat',
@@ -39,7 +38,7 @@ class MedicalGraph:
             '所属类别': 'category',
             '简介': 'desc',
             '名称': 'name',
-            '常用药品' : 'common_drug',
+            '常用药品': 'common_drug',
             '治疗费用': 'cost_money',
             '并发症': 'acompany'
         }
@@ -57,7 +56,7 @@ class MedicalGraph:
                 continue
             # 基本信息
             data['名称'] = name
-            data['简介'] = '\n'.join(basic_info['desc']).replace('\r\n\t', '').replace('\r\n\n\n','').replace(' ','').replace('\r\n','\n')
+            data['简介'] = '\n'.join(basic_info['desc']).replace('\r\n\t', '').replace('\r\n\n\n', '').replace(' ', '').replace('\r\n', '\n')
             category = basic_info['category']
             data['所属类别'] = category
             cates += category
@@ -115,7 +114,6 @@ class MedicalGraph:
 
         return
 
-
     def get_inspect(self, url):
         res = self.db['jc'].find_one({'url':url})
         if not res:
@@ -130,8 +128,7 @@ class MedicalGraph:
             selector = etree.HTML(content)
             name = selector.xpath('//title/text()')[0].split('结果分析')[0]
             desc = selector.xpath('//meta[@name="description"]/@content')[0].replace('\r\n\t','')
-            self.db['jc'].update({'url':url}, {'$set':{'name':name, 'desc':desc}})
-
+            self.db['jc'].update({'url': url}, {'$set': {'name': name, 'desc': desc}})
 
 
 if __name__ == '__main__':

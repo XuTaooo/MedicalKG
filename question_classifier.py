@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# File: question_classifier.py
-# Author: lhy<lhy_in_blcu@126.com,https://huangyong.github.io>
-# Date: 18-10-4
+
 
 import os
 import ahocorasick
 
+
 class QuestionClassifier:
     def __init__(self):
         cur_dir = '/'.join(os.path.abspath(__file__).split('/')[:-1])
-        #　特征词路径
+        # 特征词路径
         self.disease_path = os.path.join(cur_dir, 'dict/disease.txt')
         self.department_path = os.path.join(cur_dir, 'dict/department.txt')
         self.check_path = os.path.join(cur_dir, 'dict/check.txt')
@@ -20,26 +19,26 @@ class QuestionClassifier:
         self.symptom_path = os.path.join(cur_dir, 'dict/symptom.txt')
         self.deny_path = os.path.join(cur_dir, 'dict/deny.txt')
         # 加载特征词
-        self.disease_wds= [i.strip() for i in open(self.disease_path) if i.strip()]
-        self.department_wds= [i.strip() for i in open(self.department_path) if i.strip()]
-        self.check_wds= [i.strip() for i in open(self.check_path) if i.strip()]
-        self.drug_wds= [i.strip() for i in open(self.drug_path) if i.strip()]
-        self.food_wds= [i.strip() for i in open(self.food_path) if i.strip()]
-        self.producer_wds= [i.strip() for i in open(self.producer_path) if i.strip()]
-        self.symptom_wds= [i.strip() for i in open(self.symptom_path) if i.strip()]
+        self.disease_wds= [i.strip() for i in open(self.disease_path, encoding="utf-8") if i.strip()]
+        self.department_wds= [i.strip() for i in open(self.department_path, encoding="utf-8") if i.strip()]
+        self.check_wds= [i.strip() for i in open(self.check_path, encoding="utf-8") if i.strip()]
+        self.drug_wds= [i.strip() for i in open(self.drug_path, encoding="utf-8") if i.strip()]
+        self.food_wds= [i.strip() for i in open(self.food_path, encoding="utf-8") if i.strip()]
+        self.producer_wds= [i.strip() for i in open(self.producer_path, encoding="utf-8") if i.strip()]
+        self.symptom_wds= [i.strip() for i in open(self.symptom_path, encoding="utf-8") if i.strip()]
         self.region_words = set(self.department_wds + self.disease_wds + self.check_wds + self.drug_wds + self.food_wds + self.producer_wds + self.symptom_wds)
-        self.deny_words = [i.strip() for i in open(self.deny_path) if i.strip()]
+        self.deny_words = [i.strip() for i in open(self.deny_path, encoding="utf-8") if i.strip()]
         # 构造领域actree
         self.region_tree = self.build_actree(list(self.region_words))
         # 构建词典
         self.wdtype_dict = self.build_wdtype_dict()
         # 问句疑问词
         self.symptom_qwds = ['症状', '表征', '现象', '症候', '表现']
-        self.cause_qwds = ['原因','成因', '为什么', '怎么会', '怎样才', '咋样才', '怎样会', '如何会', '为啥', '为何', '如何才会', '怎么才会', '会导致', '会造成']
+        self.cause_qwds = ['原因', '成因', '为什么', '怎么会', '怎样才', '咋样才', '怎样会', '如何会', '为啥', '为何', '如何才会', '怎么才会', '会导致', '会造成']
         self.acompany_qwds = ['并发症', '并发', '一起发生', '一并发生', '一起出现', '一并出现', '一同发生', '一同出现', '伴随发生', '伴随', '共现']
-        self.food_qwds = ['饮食', '饮用', '吃', '食', '伙食', '膳食', '喝', '菜' ,'忌口', '补品', '保健品', '食谱', '菜谱', '食用', '食物','补品']
+        self.food_qwds = ['饮食', '饮用', '吃', '食', '伙食', '膳食', '喝', '菜', '忌口', '补品', '保健品', '食谱', '菜谱', '食用', '食物','补品']
         self.drug_qwds = ['药', '药品', '用药', '胶囊', '口服液', '炎片']
-        self.prevent_qwds = ['预防', '防范', '抵制', '抵御', '防止','躲避','逃避','避开','免得','逃开','避开','避掉','躲开','躲掉','绕开',
+        self.prevent_qwds = ['预防', '防范', '抵制', '抵御', '防止', '躲避', '逃避', '避开', '免得', '逃开', '避开', '避掉', '躲开','躲掉','绕开',
                              '怎样才能不', '怎么才能不', '咋样才能不','咋才能不', '如何才能不',
                              '怎样才不', '怎么才不', '咋样才不','咋才不', '如何才不',
                              '怎样才可以不', '怎么才可以不', '咋样才可以不', '咋才可以不', '如何可以不',
@@ -61,10 +60,10 @@ class QuestionClassifier:
     def classify(self, question):
         data = {}
         medical_dict = self.check_medical(question)
-        if not medical_dict:
+        if not medical_dict:  # 问句中不包含实体及其所属实体类型例如{'麻仁丸':['drug']},则返回空字典
             return {}
         data['args'] = medical_dict
-        #收集问句当中所涉及到的实体类型
+        # 收集问句当中所涉及到的实体类型
         types = []
         for type_ in medical_dict.values():
             types += type_
@@ -128,7 +127,7 @@ class QuestionClassifier:
             question_type = 'check_disease'
             question_types.append(question_type)
 
-        #　症状防御
+        # 症状预防
         if self.check_words(self.prevent_qwds, question) and 'disease' in types:
             question_type = 'disease_prevent'
             question_types.append(question_type)
@@ -198,16 +197,17 @@ class QuestionClassifier:
     '''问句过滤'''
     def check_medical(self, question):
         region_wds = []
-        for i in self.region_tree.iter(question):
+        for i in self.region_tree.iter(question):  # 将region_tree中的每一项与question内容作对比，若匹配则返回
             wd = i[1][1]
-            region_wds.append(wd)
-        stop_wds = []
+            region_wds.append(wd)  # 将问句中包含的8类实体中词语通过多模式匹配AC自动机全筛选出来放到region_wds中
+        # 过滤空字符串''
+        stop_wds = []  # 里面存放的是空字符串''
         for wd1 in region_wds:
             for wd2 in region_wds:
                 if wd1 in wd2 and wd1 != wd2:
                     stop_wds.append(wd1)
         final_wds = [i for i in region_wds if i not in stop_wds]
-        final_dict = {i:self.wdtype_dict.get(i) for i in final_wds}
+        final_dict = {i: self.wdtype_dict.get(i) for i in final_wds}
 
         return final_dict
 
@@ -221,7 +221,7 @@ class QuestionClassifier:
 
 if __name__ == '__main__':
     handler = QuestionClassifier()
-    while 1:
+    while True:
         question = input('input an question:')
         data = handler.classify(question)
         print(data)
